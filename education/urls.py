@@ -1,7 +1,13 @@
 from django.urls import path
 
-from education.views import index
+from education.apps import EducationConfig
+from education.views import ChapterListView, ChapterDetailView, MaterialsListView
+
+app_name = EducationConfig.name
 
 urlpatterns = [
-    path('', index)
+    path('', ChapterListView.as_view(), name='list_chapter'),
+    path('list/<int:pk>/', MaterialsListView.as_view(), name='list_materials'),
+
+    # path('', MaterialsListView.as_view(), name='list_chapter'),
 ]

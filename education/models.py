@@ -26,6 +26,8 @@ class Materials(models.Model):
     description_material = models.TextField(verbose_name='описание')
     video_link_material = models.URLField(verbose_name='ссылка на видео', **NULLABLE)
 
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, verbose_name='раздел')
+
     def __str__(self):
         return f'{self.name_material}'
 
