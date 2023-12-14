@@ -9,5 +9,4 @@ urlpatterns = [
     path('', ChapterListView.as_view(), name='list_chapter'),
     path('list/<int:pk>/', MaterialsListView.as_view(), name='list_materials'),
 
-    # path('', MaterialsListView.as_view(), name='list_chapter'),
 ]
