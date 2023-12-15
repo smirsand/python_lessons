@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 
-from education.models import Chapter, Materials
+from education.models import Chapter, Material, Test
 
 
 class ChapterListView(ListView):
@@ -15,10 +15,23 @@ class ChapterDetailView(DetailView):
     extra_context = {'title': 'Материалы раздела'}
 
 
-class MaterialsListView(ListView):
-    model = Materials
+class MaterialListView(ListView):
+    model = Material
     template_name = 'education/education_detail.html'
+    extra_context = {'title': 'Список материалов раздела'}
 
     def get_queryset(self):
         chapter_id = self.kwargs['pk']
-        return Materials.objects.filter(chapter_id=chapter_id)
+        return Material.objects.filter(chapter_id=chapter_id)
+
+
+class MaterialDetailView(DetailView):
+    model = Material
+    template_name = 'education/material_detail.html'
+    extra_context = {'title': 'Материал'}
+
+
+class TestListView(ListView):
+    model = Test
+    template_name = 'education/test_list.html'
+    extra_context = {'title': 'Тесты'}

@@ -8,7 +8,6 @@ class Chapter(models.Model):
     Модель учебного раздела.
     """
     name_chapter = models.CharField(max_length=100, verbose_name='наименование раздела')
-    description_chapter = models.TextField(verbose_name='описание раздела', **NULLABLE)
 
     def __str__(self):
         return f'{self.name_chapter}'
@@ -18,7 +17,7 @@ class Chapter(models.Model):
         verbose_name_plural = 'разделы'
 
 
-class Materials(models.Model):
+class Material(models.Model):
     """
     Модель учебного материала.
     """
@@ -34,3 +33,28 @@ class Materials(models.Model):
     class Meta:
         verbose_name = 'материал'
         verbose_name_plural = 'материалы'
+
+
+class Test(models.Model):
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='материал')
+    question = models.TextField(verbose_name='вопрос')
+
+    def __str__(self):
+        return f'{self.question}'
+
+    class Meta:
+        verbose_name = 'тест'
+        verbose_name_plural = 'тесты'
+
+
+class Answer(models.Model):
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='answers', verbose_name='тест')
+    text = models.CharField(max_length=255, verbose_name='текст ответа')
+    is_correct = models.BooleanField(verbose_name='правильный ответ')
+
+    def __str__(self):
+        return f'{self.text}'
+
+    class Meta:
+        verbose_name = 'ответ'
+        verbose_name_plural = 'ответы'

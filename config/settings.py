@@ -79,7 +79,6 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'bd_lessons',
         'USER': 'postgres',
-        'HOST': '127.0.0.1',
         'PORT': '5432',
         'PASSWORD': '2721896'
     }
@@ -132,5 +131,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'  # Из приложения users берем модель User.
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

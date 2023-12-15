@@ -3,11 +3,12 @@
     <a class="navbar-brand text-white" href="#">{{ "Меню"|upper }}</a>
     <div class="collapse navbar-collapse" id="navbarHeader">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item"><a href="{% url 'education:list_chapter' %}" class="nav-link text-white">Главная</a></li>
+            <li class="nav-item"><a href="{% url 'education:list_chapter' %}" class="nav-link text-white">Главная</a>
+            </li>
             <li class="nav-item"><a href="#" class="nav-link text-white">Блог</a></li>
             <li class="nav-item"><a href="#" class="nav-link text-white">Контакты</a></li>
             {% if user.is_authenticated %}
-            <li class="nav-item"><a href="#" class="nav-link text-white">Профиль</a></li>
+            <li class="nav-item"><a href="{% url 'users:profile' %}" class="nav-link text-white">Профиль</a></li>
             <li class="nav-item"><a href="{% url 'users:logout' %}" class="nav-link text-white">Выйти</a></li>
             {% else %}
             <li class="nav-item"><a href="{% url 'users:login' %}" class="nav-link text-white">Вход</a></li>
