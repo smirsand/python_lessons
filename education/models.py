@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -38,6 +40,12 @@ class Material(models.Model):
 class Test(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='материал')
     question = models.TextField(verbose_name='вопрос')
+    answer_1 = models.CharField(max_length=100, verbose_name='Ответ 1', default=0)
+    answer_2 = models.CharField(max_length=100, verbose_name='Ответ 2', default=0)
+    answer_3 = models.CharField(max_length=100, verbose_name='Ответ 3', default=0)
+    correct_answer = models.IntegerField(choices=((1, 'Ответ 1'), (2, 'Ответ 2'), (3, 'Ответ 3')), default=0,
+                                         verbose_name='Правильный ответ')
+    order = models.AutoField(primary_key=True, verbose_name='Порядок')
 
     def __str__(self):
         return f'{self.question}'
@@ -47,14 +55,16 @@ class Test(models.Model):
         verbose_name_plural = 'тесты'
 
 
-class Answer(models.Model):
-    test = models.ForeignKey(Test, on_delete=models.CASCADE, related_name='answers', verbose_name='тест')
-    text = models.CharField(max_length=255, verbose_name='текст ответа')
-    is_correct = models.BooleanField(verbose_name='правильный ответ')
+class TestResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='тест')
+    choice = models.IntegerField(verbose_name='выбор')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='дата')
 
     def __str__(self):
-        return f'{self.text}'
+        return f"Test: {self.test.title}, User: {self.user.email}, Choice: {self.choice}"
 
     class Meta:
-        verbose_name = 'ответ'
-        verbose_name_plural = 'ответы'
+        verbose_name = 'результат'
+        verbose_name_plural = 'результаты'
+
