@@ -19,20 +19,37 @@ class MaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
-    list_display = ('question', 'material',)  # Вывод столбцов в таблице
+    list_display = ('question', 'material', 'get_material_chapter', 'correct_answer',)  # Вывод столбцов в таблице
     list_filter = ('question',)  # Фильтрация
     search_fields = ('question',)  # Поиск
+
+    def get_material_chapter(self, obj):
+        return obj.material.chapter
+
+    get_material_chapter.short_description = 'раздел'
 
 
 @admin.register(TestResult)
 class TestResultAdmin(admin.ModelAdmin):
-    list_display = ('user', 'test', 'choice', 'date')  # Вывод столбцов в таблице
+    list_display = ('date', 'user', 'test', 'material', 'choice', 'correct_answer')  # Вывод столбцов в таблице
     list_filter = ('date',)  # Фильтрация
     search_fields = ('user',)  # Поиск
 
+    def correct_answer(self, obj):
+        test = getattr(obj, 'test', None)
+        if test:
+            correct_answer = test.correct_answer
+            return correct_answer
+        return None
 
-# @admin.register(Answer)
-# class AnswerAdmin(admin.ModelAdmin):
-#     list_display = ('test', 'text', 'is_correct')  # Вывод столбцов в таблице
-#     list_filter = ('text', 'test', 'is_correct',)  # Фильтрация
-#     search_fields = ('text', 'test', 'is_correct',)  # Поиск
+    correct_answer.short_description = 'правильный ответ'
+
+    def material(self, obj):
+        test = getattr(obj, 'test', None)
+        if test:
+            material = test.material
+            return material
+        return None
+
+    material.short_description = 'материал'
+
