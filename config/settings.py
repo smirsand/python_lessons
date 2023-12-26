@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "django_bootstrap5",
 
+    'rest_framework',
+    'django_filters',
+
     'education',
     'users',
 ]
@@ -138,3 +141,4 @@ AUTH_USER_MODEL = 'users.User'  # Из приложения users берем м�
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/users/'
