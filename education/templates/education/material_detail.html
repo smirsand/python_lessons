@@ -14,7 +14,7 @@
                         <p class="card-text">Ссылка на видео: {{ object.video_link_material }}</p>
                         <div class="btn-group">
                             <button type="button"
-                                    onclick="window.location.href='{% url 'education:test_detail' object.pk %}'"
+                                    onclick="window.location.href='{% url 'education:test_list' object.pk %}'"
                                     class="btn btn-outline-secondary">Пройти тест
                             </button>
                         </div>
@@ -25,3 +25,4 @@
     </div>
 </div>
 {% endblock %}
+

@@ -30,7 +30,7 @@ class Material(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, verbose_name='раздел')
 
     def __str__(self):
-        return f'{self.name_material}'
+        return f'{self.name_material}, {self.chapter}'
 
     class Meta:
         verbose_name = 'материал'
@@ -45,7 +45,6 @@ class Test(models.Model):
     answer_3 = models.CharField(max_length=100, verbose_name='Ответ 3', default=0)
     correct_answer = models.IntegerField(choices=((1, 'Ответ 1'), (2, 'Ответ 2'), (3, 'Ответ 3')), default=0,
                                          verbose_name='Правильный ответ')
-    order = models.AutoField(primary_key=True, verbose_name='Порядок')
 
     def __str__(self):
         return f'{self.question}'
@@ -62,9 +61,8 @@ class TestResult(models.Model):
     date = models.DateTimeField(auto_now_add=True, verbose_name='дата')
 
     def __str__(self):
-        return f"Test: {self.test.title}, User: {self.user.email}, Choice: {self.choice}"
+        return f'{self.user}, {self.test}, {self.choice}'
 
     class Meta:
-        verbose_name = 'результат'
-        verbose_name_plural = 'результаты'
-
+        verbose_name = 'результат теста'
+        verbose_name_plural = 'результаты тестов'
