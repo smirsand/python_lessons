@@ -1,0 +1,24 @@
+{% extends 'education/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<main role="main">
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                {% for object in object_list %}
+                <div class="col-md-4">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-body">
+                            <p class="card-text">Вопрос: {{object.test}}</p>
+                            <p class="card-text">Ответ: {{object.choice}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
