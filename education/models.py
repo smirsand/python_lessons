@@ -59,6 +59,7 @@ class TestResult(models.Model):
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='тест')
     choice = models.IntegerField(verbose_name='выбор')
     date = models.DateTimeField(auto_now_add=True, verbose_name='дата')
+    is_correct = models.BooleanField(default=False, verbose_name='корректность ответа')
 
     def __str__(self):
         return f'{self.user}, {self.test}, {self.choice}'
@@ -66,3 +67,4 @@ class TestResult(models.Model):
     class Meta:
         verbose_name = 'результат теста'
         verbose_name_plural = 'результаты тестов'
+
