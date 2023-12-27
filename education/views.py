@@ -74,34 +74,54 @@ class TestDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        test = self.get_object()
-        answer = request.POST.get('answer', '')
+        test = get_object_or_404(Test, pk=kwargs['pk'])
+        answer = int(request.POST.get('answer', ''))
         user = request.user
+
+        test = get_object_or_404(Test, pk=kwargs['pk'])
+
+        # Если ответ правильный, помечаем is_correct как True
+        is_correct = (answer == test.correct_answer)
+
+        # Проверяем, проходил ли пользователь уже этот тест
+        if TestResult.objects.filter(test=test, user=user).exists():
+            # Если пользователь уже проходил тест, перенаправляем на список глав
+            return HttpResponseRedirect(reverse('education:list_chapter'))
 
         if answer:
             # Обработка правильного ответа
-            test.testresult_set.create(user=user, choice=answer)
+            test.testresult_set.create(user=user, choice=answer, is_correct=is_correct)
             material = test.material
-            next_tests = Test.objects.filter(material=material, id__gt=test.id).order_by('id')
+            all_tests = Test.objects.filter(material=material).order_by('id')
 
-            # Проверяем, остались ли еще тесты для данного материала
-            if next_tests.exists():
-                # Находим следующий тест
-                next_test = next_tests.first()
+            # Проверяем, все ли тесты пройдены пользователем
+            if all_tests.exists():
+                # Проверяем, есть ли предыдущие тесты для данного материала
+                previous_tests = all_tests.filter(id__lt=test.id)
+                if previous_tests.exists():
+                    # Проверяем, прошел ли пользователь все предыдущие тесты
+                    if not TestResult.objects.filter(test__in=previous_tests, user=user).exists():
+                        # Если предыдущие тесты не пройдены, перенаправляем на последний непройденный тест
+                        return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': previous_tests.last().pk}))
 
-                # Перенаправляем на следующий тест
-                return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': next_test.pk}))
-            else:
-                # Перенаправляем на список глав, если больше нет тестов
-                return HttpResponseRedirect(reverse('education:list_chapter'))
-        else:
-            # Перенаправляем на текущий тест, если пользователь не отправил ответ
-            return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': test.pk}))
+                # Проверяем, есть ли еще тесты для данного материала
+                remaining_tests = all_tests.filter(id__gt=test.id)
+                if remaining_tests.exists():
+                    # Если есть еще тесты, перенаправляем на первый непройденный тест
+                    return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': remaining_tests.first().pk}))
+
+            # Если все тесты пройдены, перенаправляем на список глав
+            return HttpResponseRedirect(reverse('education:list_chapter'))
 
 
 class TestResultListView(LoginRequiredMixin, ListView):
     model = TestResult
     serializer_class = TestResultSerializer
     queryset = TestResult.objects.all()
-    template_name = 'education/test_result_detail.html'
+    template_name = 'education/test_result_list.html'
     extra_context = {'title': 'Результаты теста'}
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
