@@ -22,6 +22,13 @@ class TestSerializer(serializers.ModelSerializer):
 
 
 class TestResultSerializer(serializers.ModelSerializer):
+    is_correct = serializers.BooleanField()
+
     class Meta:
         model = TestResult
         fields = "__all__"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(user=self.request.user)
+        return queryset
