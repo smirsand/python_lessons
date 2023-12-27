@@ -11,8 +11,13 @@
                 <div class="col-md-4">
                     <div class="card mb-4 box-shadow">
                         <div class="card-body">
+                            <p class="card-text">{{object.test.material}}</p>
                             <p class="card-text">Вопрос: {{object.test}}</p>
-                            <p class="card-text">Ответ: {{object.choice}}</p>
+                            {% if object.is_correct %}
+                            <p class="card-text text-success">Правильный ответ</p>
+                            {% else %}
+                            <p class="card-text text-danger">Неправильный ответ</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
