@@ -1,0 +1,28 @@
+{% extends 'education/base.html' %}
+{% block content %}
+<!doctype html>
+<div class="album py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <p class="card-text">{{object.name_material}}</p>
+            <div class="col-md-12">
+                <div class="card mb-4 box-shadow">
+                    <div class="card-body">
+                        <p class="card-text">Описание материала</p>
+                        <p class="card-text">{{object.description_material}}</p>
+                        <br>
+                        <p class="card-text">Ссылка на видео: {{ object.video_link_material }}</p>
+                        <div class="btn-group">
+                            <button type="button"
+                                    onclick="window.location.href='{% url 'education:test_list' object.pk %}'"
+                                    class="btn btn-outline-secondary">Пройти тест
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,39 @@
+{% extends 'education/base.html' %}
+
+{% block content %}
+
+{% load static %}
+<main role="main">
+    <form method="post">
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row">
+                    <p class="card-text">{{ title }}</p>
+                    {% for object in object_list %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 box-shadow">
+                            <div class="card-body">
+                                {% csrf_token %}
+                                <p class="card-text">{{ object.question }}</p>
+                                <div class="btn-group">
+                                    <select class="form-select" name="answer" aria-label="Пример выбора по умолчанию">
+                                        <option selected disabled>Выберите вариант ответа</option>
+                                        <option value="1"><h6>{{ object.choice_1 }}</h6></option>
+                                        <option value="2"><h6>{{ object.choice_2 }}</h6></option>
+                                        <option value="3"><h6>{{ object.choice_3 }}</h6></option>
+                                    </select>
+                                    <input type="hidden" name="id" value="{{ object.id }}"> <!-- Вставляем код здесь -->
+                                    <div class="d-flex justify-content-center">
+                                        <button type="submit" class="btn btn-primary">Отправить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </form>
+</main>
+{% endblock %}

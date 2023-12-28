@@ -1,0 +1,18 @@
+<h1>Платформа обучения студентов</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand text-white" href="#">{{ "Меню"|upper }}</a>
+    <div class="collapse navbar-collapse" id="navbarHeader">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item"><a href="{% url 'education:chapter_list' %}" class="nav-link text-white">Главная</a>
+            </li>
+            <li class="nav-item"><a href="{% url 'education:test_result_list' %}" class="nav-link text-white">Результат теста</a></li>
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a href="{% url 'users:profile' %}" class="nav-link text-white">Профиль</a></li>
+            <li class="nav-item"><a href="{% url 'users:logout' %}" class="nav-link text-white">Выйти</a></li>
+            {% else %}
+            <li class="nav-item"><a href="{% url 'users:login' %}" class="nav-link text-white">Вход</a></li>
+            <li class="nav-item"><a href="{% url 'users:register' %}" class="nav-link text-white">Регистрация</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
