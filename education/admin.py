@@ -52,4 +52,3 @@ class TestResultAdmin(admin.ModelAdmin):
         return None
 
     material.short_description = 'материал'
-

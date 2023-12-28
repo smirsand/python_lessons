@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
-from rest_framework.generics import get_object_or_404
+from rest_framework import request
 
-from education.forms import TestResultForm, TestForm
+from education.forms import TestForm
 from education.models import Chapter, Material, Test, TestResult
 from education.serliazers import ChapterSerializer, MaterialSerializer, TestSerializer, TestResultSerializer
 
@@ -56,62 +57,65 @@ class TestListView(LoginRequiredMixin, ListView):
         material = get_object_or_404(Material, id=material_id)
         return Test.objects.filter(material=material)
 
-
-class TestDetailView(LoginRequiredMixin, DetailView):
-    model = Test
-    serializer_class = TestSerializer
-    queryset = Test.objects.all()
-    form_class = TestForm
-    template_name = 'education/test_detail.html'
-    extra_context = {'title': 'Тест'}
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tests'] = self.object.material.test_set.values_list('id', flat=True)
+        test_result_exists = TestResult.objects.filter(user=self.request.user).exists()
+        context['is_passed'] = test_result_exists
         return context
 
     def post(self, request, *args, **kwargs):
-        test = get_object_or_404(Test, pk=kwargs['pk'])
+        material_id = kwargs.get('material_id')
+        test_id = int(request.POST.get('id'))
+        test = get_object_or_404(Test, id=test_id)
+        question = test.question
         answer = int(request.POST.get('answer', ''))
-        user = request.user
-
-        test = get_object_or_404(Test, pk=kwargs['pk'])
-
-        # Если ответ правильный, помечаем is_correct как True
         is_correct = (answer == test.correct_answer)
 
-        # Проверяем, проходил ли пользователь уже этот тест
-        if TestResult.objects.filter(test=test, user=user).exists():
-            # Если пользователь уже проходил тест, перенаправляем на список глав
-            return HttpResponseRedirect(reverse('education:list_chapter'))
+        try:
+            test = Test.objects.filter(question=question).first()
+            TestResult.objects.create(user=request.user, test=test, choice=answer, is_correct=is_correct)
+            return HttpResponseRedirect(reverse('education:test_list', args=[material_id]))
+        except Exception as e:
+            return HttpResponse(f'Ошибка: {e}')
 
-        if answer:
-            # Обработка правильного ответа
-            test.testresult_set.create(user=user, choice=answer, is_correct=is_correct)
-            material = test.material
-            all_tests = Test.objects.filter(material=material).order_by('id')
 
-            # Проверяем, все ли тесты пройдены пользователем
-            if all_tests.exists():
-                # Проверяем, есть ли предыдущие тесты для данного материала
-                previous_tests = all_tests.filter(id__lt=test.id)
-                if previous_tests.exists():
-                    # Проверяем, прошел ли пользователь все предыдущие тесты
-                    if not TestResult.objects.filter(test__in=previous_tests, user=user).exists():
-                        # Если предыдущие тесты не пройдены, перенаправляем на последний непройденный тест
-                        return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': previous_tests.last().pk}))
+class TestDetailView(LoginRequiredMixin, DetailView):
+    model = Test
+    template_name = 'education/test_detail.html'
+    form_class = TestForm
+    extra_context = {'title': 'Тест'}
 
-                # Проверяем, есть ли еще тесты для данного материала
-                remaining_tests = all_tests.filter(id__gt=test.id)
-                if remaining_tests.exists():
-                    # Если есть еще тесты, перенаправляем на первый непройденный тест
-                    return HttpResponseRedirect(reverse('education:test_detail', kwargs={'pk': remaining_tests.first().pk}))
+    def get_object(self, queryset=None):
+        order = self.kwargs.get('order')
+        queryset = self.get_queryset()
 
-            # Если все тесты пройдены, перенаправляем на список глав
-            return HttpResponseRedirect(reverse('education:list_chapter'))
+        if order is not None:
+            queryset = queryset.filter(order=order)
+
+        return super().get_object(queryset)
+
+    # def post(self, request, *args, **kwargs):
+    #     test = get_object_or_404(Test, pk=kwargs['pk'])
+    #     answer = int(request.POST.get('answer', ''))
+    #     user = request.user
+    #
+    #     # Получаем идентификатор материала
+    #     material_id = test.material.id
+    #
+    #     # Если ответ правильный, помечаем is_correct как True
+    #     is_correct = (answer == test.correct_answer)
+    #
+    #     if answer:
+    #         test.testresult_set.create(user=user, choice=answer, is_correct=is_correct)
+    #
+    #     # Найти следующий тест материала
+    #     next_test = Test.objects.filter(material_id=material_id, order__gt=test.order).first()
+    #
+    #     if next_test:
+    #         return redirect('education:test_detail', pk=next_test.id)
+    #     else:
+    #         # Если это был последний тест материала, перенаправить пользователя на страницу с материалом
+    #         return redirect('education:material_detail', pk=material_id)
 
 
 class TestResultListView(LoginRequiredMixin, ListView):
