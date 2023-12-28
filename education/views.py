@@ -72,7 +72,7 @@ class TestListView(LoginRequiredMixin, ListView):
         is_correct = (answer == test.correct_answer)
 
         try:
-            # test = Test.objects.filter(question=question).first()
+            test = Test.objects.filter(question=question).first()
             TestResult.objects.create(user=request.user, test=test, choice=answer, is_correct=is_correct)
             return HttpResponseRedirect(reverse('education:test_list', args=[material_id]))
         except Exception as e:
