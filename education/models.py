@@ -45,7 +45,7 @@ class Test(models.Model):
     choice_3 = models.CharField(max_length=100, verbose_name='Ответ 3', default=0)
     correct_answer = models.IntegerField(choices=((1, 'Ответ 1'), (2, 'Ответ 2'), (3, 'Ответ 3')), default=0,
                                          verbose_name='Правильный ответ')
-    order = models.PositiveIntegerField(null=True, default=0, verbose_name='порядковый номер')
+    # order = models.PositiveIntegerField(null=True, default=0, verbose_name='порядковый номер')
 
     def __str__(self):
         return f'{self.question}'
