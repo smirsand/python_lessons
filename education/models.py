@@ -55,10 +55,10 @@ class Test(models.Model):
 
 
 class TestResult(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='тест')
     choice = models.IntegerField(verbose_name='выбор')
-    date = models.DateTimeField(auto_now_add=True, verbose_name='дата')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='дата', **NULLABLE)
     is_correct = models.BooleanField(default=False, verbose_name='корректность ответа')
 
     def __str__(self):
