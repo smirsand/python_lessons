@@ -40,12 +40,11 @@ class Material(models.Model):
 class Test(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='материал')
     question = models.TextField(verbose_name='вопрос')
-    choice_1 = models.CharField(max_length=100, verbose_name='Ответ 1', default=0)
-    choice_2 = models.CharField(max_length=100, verbose_name='Ответ 2', default=0)
-    choice_3 = models.CharField(max_length=100, verbose_name='Ответ 3', default=0)
+    answer_1 = models.CharField(max_length=100, verbose_name='Ответ 1', default=0)
+    answer_2 = models.CharField(max_length=100, verbose_name='Ответ 2', default=0)
+    answer_3 = models.CharField(max_length=100, verbose_name='Ответ 3', default=0)
     correct_answer = models.IntegerField(choices=((1, 'Ответ 1'), (2, 'Ответ 2'), (3, 'Ответ 3')), default=0,
                                          verbose_name='Правильный ответ')
-    # order = models.PositiveIntegerField(null=True, default=0, verbose_name='порядковый номер')
 
     def __str__(self):
         return f'{self.question}'
@@ -61,7 +60,6 @@ class TestResult(models.Model):
     choice = models.IntegerField(verbose_name='выбор')
     date = models.DateTimeField(auto_now_add=True, verbose_name='дата')
     is_correct = models.BooleanField(default=False, verbose_name='корректность ответа')
-    is_passed = models.BooleanField(default=True, verbose_name='пройден')
 
     def __str__(self):
         return f'{self.user}, {self.test}, {self.choice}'
