@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
+from django.db.models import F
 
 from education.models import Chapter, Material, Test, TestResult
 
@@ -29,10 +31,29 @@ class TestAdmin(admin.ModelAdmin):
     get_material_chapter.short_description = 'раздел'
 
 
+class CorrectAnswerFilter(SimpleListFilter):
+    title = 'правильный ответ'
+    parameter_name = 'correct_answer'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('yes', 'Да'),
+            ('no', 'Нет'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(choice=F('test__correct_answer'))
+        elif self.value() == 'no':
+            return queryset.exclude(choice=F('test__correct_answer'))
+        else:
+            return queryset
+
+
 @admin.register(TestResult)
 class TestResultAdmin(admin.ModelAdmin):
     list_display = ('date', 'user', 'test', 'material', 'choice', 'correct_answer')  # Вывод столбцов в таблице
-    list_filter = ('date',)  # Фильтрация
+    list_filter = ('date', 'user', CorrectAnswerFilter)  # Фильтрация
     search_fields = ('user',)  # Поиск
 
     def correct_answer(self, obj):
