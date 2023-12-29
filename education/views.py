@@ -131,14 +131,22 @@ class TestDetailView(LoginRequiredMixin, DetailView):
     #         return HttpResponseRedirect(reverse('education:test_list', kwargs={'material_id': test.material.pk}))
 
 
-class TestResultListView(LoginRequiredMixin, ListView):
+class TestResultListView(ListView):  # Добавить LoginRequiredMixin, после прохождения тестов.
     model = TestResult
     serializer_class = TestResultSerializer
     queryset = TestResult.objects.all()
     template_name = 'education/test_result_list.html'
     extra_context = {'title': 'Результаты теста'}
 
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     queryset = queryset.filter(user=self.request.user)
+    #     return queryset
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(user=self.request.user)
+
+        if self.request.user.is_authenticated:
+            queryset = queryset.filter(user=self.request.user)
+
         return queryset
