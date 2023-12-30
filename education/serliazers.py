@@ -18,7 +18,7 @@ class MaterialSerializer(serializers.ModelSerializer):
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = "__all__"
+        fields = '__all__'
 
 
 class TestResultSerializer(serializers.ModelSerializer):
