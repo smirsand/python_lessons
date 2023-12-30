@@ -109,27 +109,6 @@ class TestDetailView(LoginRequiredMixin, DetailView):
 
         return HttpResponseRedirect(reverse('education:test_list', kwargs={'material_id': test.material.pk}))
 
-    # def post(self, request, *args, **kwargs):
-    #     test = get_object_or_404(Test, pk=kwargs['pk'])
-    #     answer = int(request.POST.get('answer', ''))
-    #     user = request.user
-    #
-    #     # Если ответ правильный, помечаем is_correct как True
-    #     is_correct = (answer == test.correct_answer)
-    #
-    #     # Проверяем, проходил ли пользователь уже этот тест
-    #     if TestResult.objects.filter(test=test, user=user).exists():
-    #         # Если пользователь уже проходил тест, перенаправляем на список тестов текущего материала
-    #         return HttpResponseRedirect(reverse('education:list_test', kwargs={'material_id': test.material.pk}))
-    #
-    #     if answer:
-    #         # Обработка правильного ответа
-    #         test.testresult_set.create(user=user, choice=answer, is_correct=is_correct)
-    #         material = test.material
-    #         all_tests = Test.objects.filter(material=material).order_by('id')
-    #
-    #         return HttpResponseRedirect(reverse('education:test_list', kwargs={'material_id': test.material.pk}))
-
 
 class TestResultListView(ListView):  # Добавить LoginRequiredMixin, после прохождения тестов.
     model = TestResult
@@ -142,16 +121,3 @@ class TestResultListView(ListView):  # Добавить LoginRequiredMixin, по
         queryset = super().get_queryset()
         queryset = queryset.filter(user=self.request.user)
         return queryset
-
-    # def render_to_response(self, context, **response_kwargs):
-    #     serialized_data = TestResultSerializer(self.get_queryset(), many=True).data
-    #     return JsonResponse(serialized_data, safe=False)
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #
-    #     if self.request.user.is_authenticated:
-    #         queryset = queryset.filter(user=self.request.user)
-    #
-    #     return queryset
-
