@@ -22,8 +22,9 @@ class TestResultCase(APITestCase):
     def test_test_result_list(self):
         """Тест получения списка результатов"""
 
+        self.client.force_login(self.user)
+
         data = {
-            "user": self.user_id,
             "test": self.test,
             "is_correct": True,
             "choice": 1,
@@ -41,12 +42,18 @@ class TestResultCase(APITestCase):
             status.HTTP_200_OK
         )
 
+        self.assertEqual(
+            response.headers['Content-Type'],
+            'application/json'
+        )
+
         self.assertEqual(response.json(), {
-            "user": self.user_id,
-            "test": self.test,
+            "id": 31,
             "is_correct": True,
-            "choice": 1,
-            "id": 1,
+            "choice": 2,
+            "date": "2023-12-29T21:32:17.901406+03:00",
+            "user": 1,
+            "test": 1
         }
                          )
 

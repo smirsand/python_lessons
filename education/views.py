@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import DetailView, ListView
 from rest_framework.generics import get_object_or_404
 
-from education.forms import TestResultForm, TestForm
+from education.forms import TestForm
 from education.models import Chapter, Material, Test, TestResult
 from education.serliazers import ChapterSerializer, MaterialSerializer, TestSerializer, TestResultSerializer
 from users.models import User
@@ -138,15 +138,20 @@ class TestResultListView(ListView):  # Добавить LoginRequiredMixin, по
     template_name = 'education/test_result_list.html'
     extra_context = {'title': 'Результаты теста'}
 
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     queryset = queryset.filter(user=self.request.user)
-    #     return queryset
-
     def get_queryset(self):
         queryset = super().get_queryset()
-
-        if self.request.user.is_authenticated:
-            queryset = queryset.filter(user=self.request.user)
-
+        queryset = queryset.filter(user=self.request.user)
         return queryset
+
+    # def render_to_response(self, context, **response_kwargs):
+    #     serialized_data = TestResultSerializer(self.get_queryset(), many=True).data
+    #     return JsonResponse(serialized_data, safe=False)
+
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #
+    #     if self.request.user.is_authenticated:
+    #         queryset = queryset.filter(user=self.request.user)
+    #
+    #     return queryset
+
