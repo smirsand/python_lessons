@@ -41,6 +41,9 @@ class TestAdmin(admin.ModelAdmin):
 
 
 class CorrectAnswerFilter(SimpleListFilter):
+    """
+    Фильтр административной панели для отображения объектов модели на основе правильного ответа на тестовый вопрос.
+    """
     title = 'правильный ответ'
     parameter_name = 'correct_answer'
 
