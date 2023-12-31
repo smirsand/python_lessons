@@ -1,4 +1,5 @@
 from django.urls import path
+
 from education.apps import EducationConfig
 from education.views import ChapterListView, MaterialListView, MaterialDetailView, TestDetailView, TestResultListView, \
     TestListView
