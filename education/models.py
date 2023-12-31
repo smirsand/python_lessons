@@ -38,6 +38,9 @@ class Material(models.Model):
 
 
 class Test(models.Model):
+    """
+    Модель учебного теста.
+    """
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='материал')
     question = models.TextField(verbose_name='вопрос')
     answer_1 = models.CharField(max_length=100, verbose_name='Ответ 1', default=0)
@@ -55,6 +58,9 @@ class Test(models.Model):
 
 
 class TestResult(models.Model):
+    """
+    Модель результатов теста.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
     test = models.ForeignKey(Test, on_delete=models.CASCADE, verbose_name='тест')
     choice = models.IntegerField(verbose_name='выбор')
