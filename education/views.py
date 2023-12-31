@@ -11,6 +11,9 @@ from users.models import User
 
 
 class ChapterListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер списка разделов.
+    """
     model = Chapter
     serializer_class = ChapterSerializer
     queryset = Chapter.objects.all()
@@ -18,15 +21,10 @@ class ChapterListView(LoginRequiredMixin, ListView):
     extra_context = {'title': 'Главная'}
 
 
-class ChapterDetailView(LoginRequiredMixin, DetailView):
-    model = Chapter
-    serializer_class = ChapterSerializer
-    queryset = Chapter.objects.all()
-    template_name = 'education/materials_list.html'
-    extra_context = {'title': 'Материалы раздела'}
-
-
 class MaterialListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер списка материалов.
+    """
     model = Material
     serializer_class = MaterialSerializer
     queryset = Material.objects.all()
@@ -39,6 +37,9 @@ class MaterialListView(LoginRequiredMixin, ListView):
 
 
 class MaterialDetailView(LoginRequiredMixin, DetailView):
+    """
+    Контроллер материала.
+    """
     model = Material
     serializer_class = MaterialSerializer
     queryset = Material.objects.all()
@@ -47,35 +48,39 @@ class MaterialDetailView(LoginRequiredMixin, DetailView):
 
 
 class TestListView(LoginRequiredMixin, ListView):
+    """
+    Контроллер списка тестов.
+    """
     model = Test
     serializer_class = TestSerializer
     template_name = 'education/test_list.html'
     extra_context = {'title': 'Список тестов'}
 
     def get_queryset(self):
+        # Получаем material_id из параметров представления.
         material_id = self.kwargs['material_id']
+        # Получаем объект Material по material_id.
         material = get_object_or_404(Material, id=material_id)
+        # Получаем id текущего пользователя из запроса.
         user_id = self.request.user.id
-
-        # Получаем список ID тестов, которые не пройдены текущим пользователем
+        # Получаем список тестов, которые не пройдены текущим пользователем.
         completed_test_ids = TestResult.objects.filter(user_id=user_id).values_list('test_id', flat=True)
-
-        # Фильтруем тесты на основе тех, которые не были пройдены пользователем
+        # Фильтруем тесты на основе тех, которые не были пройдены пользователем.
         queryset = Test.objects.filter(material=material).exclude(id__in=completed_test_ids)
 
         return queryset
 
 
 class TestDetailView(LoginRequiredMixin, DetailView):
+    """
+    Контроллер теста.
+    """
     model = Test
     serializer_class = TestSerializer
     queryset = Test.objects.all()
     form_class = TestForm
     template_name = 'education/test_detail.html'
     extra_context = {'title': 'Тест'}
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -111,6 +116,9 @@ class TestDetailView(LoginRequiredMixin, DetailView):
 
 
 class TestResultListView(ListView):  # Добавить LoginRequiredMixin, после прохождения тестов.
+    """
+    Контроллер списка результатов теста.
+    """
     model = TestResult
     serializer_class = TestResultSerializer
     queryset = TestResult.objects.all()
