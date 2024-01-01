@@ -82,7 +82,7 @@ class TestDetailView(LoginRequiredMixin, DetailView):
     template_name = 'education/test_detail.html'
     extra_context = {'title': 'Тест'}
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):  # для получения дополнительных контекстных данных для передачи в шаблон.
         context = super().get_context_data(**kwargs)
         test = self.get_object()
         user = self.request.user
@@ -93,25 +93,28 @@ class TestDetailView(LoginRequiredMixin, DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
+        # получаем объект теста по его первичному ключу (pk).
         test = get_object_or_404(Test, pk=kwargs['pk'])
+        # получаем значение ответа из POST-запроса.
         answer = int(request.POST.get('answer', ''))
-        user_id = request.user.id  # Получаем идентификатор пользователя
-        user = get_object_or_404(User, id=user_id)  # Получаем пользователя по идентификатору
+        # получаем идентификатор пользователя
+        user_id = request.user.id
+        # получаем пользователя по идентификатору
+        user = get_object_or_404(User, id=user_id)
 
-        # Если ответ правильный, помечаем is_correct как True
+        # сравниваем полученный ответ, если ответ правильный, помечаем is_correct как True
         is_correct = (answer == test.correct_answer)
 
-        # Проверяем, проходил ли пользователь с данным идентификатором уже этот тест
-        if TestResult.objects.filter(test=test, user=user).exists():
-            # Если пользователь уже проходил тест, перенаправляем на список тестов текущего материала
-            return HttpResponseRedirect(reverse('education:list_test', kwargs={'material_id': test.material.pk}))
-
+        # проверяем, был ли получен ответ на вопрос.
         if answer:
-            # Обработка правильного ответа
+            # создаем объект TestResult
             test.testresult_set.create(user=user, choice=answer, is_correct=is_correct)
+            # получаем объект материала, к которому относится данный тест.
             material = test.material
-            all_tests = Test.objects.filter(material=material).order_by('id')
+            # получаем все тесты для данного материала и сортируем их по полю id
+            Test.objects.filter(material=material).order_by('id')
 
+            # Перенаправляем пользователя на страницу списка тестов для данного материала.
         return HttpResponseRedirect(reverse('education:test_list', kwargs={'material_id': test.material.pk}))
 
 
@@ -126,6 +129,8 @@ class TestResultListView(ListView):  # Добавить LoginRequiredMixin, по
     extra_context = {'title': 'Результаты теста'}
 
     def get_queryset(self):
+        # получаем базовый набор объектов из родительского класса ListView.
         queryset = super().get_queryset()
+        # фильтруем объекты, оставляя те, которые принадлежат текущему пользователю.
         queryset = queryset.filter(user=self.request.user)
         return queryset
