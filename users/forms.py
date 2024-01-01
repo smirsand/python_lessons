@@ -5,12 +5,20 @@ from users.models import User
 
 
 class UserRegisterForm(UserCreationForm):
+    """
+    Форма регистрации пользователя.
+    """
+
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'password1', 'password2')
 
 
 class ProfileForm(UserChangeForm):
+    """
+    Форма профиля пользователя.
+    """
+
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name', 'avatar', 'phone', 'country')
