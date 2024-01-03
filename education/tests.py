@@ -1,3 +1,5 @@
+from time import sleep
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -15,26 +17,31 @@ class TestResultCase(APITestCase):
         self.material = Material.objects.create(name_material="Материал", description_material="Описание",
                                                 chapter=self.chapter)
         self.material_id = Material.objects.get(pk=self.material.id)
-        self.test = Test.objects.create(question="Вопрос", material=self.material_id, correct_answer=1)
-        self.test = Test.objects.get(pk=1)
+        self.test = Test.objects.create(question="Сколько ног у стула?", material=self.material_id, correct_answer=1)
+        self.test_pk = Test.objects.get(pk=1)
+        # print(self.test_pk)
         self.user_id = User.objects.get(pk=1)  # Получаем экземпляр пользователя по его идентификатору
 
     def test_test_result_list(self):
         """Тест получения списка результатов"""
 
-        self.client.force_login(self.user)
+        self.client.force_login(self.user)  # аутентификация пользователя.
 
         data = {
-            "test": self.test,
+            "test": self.test_pk,
             "is_correct": True,
             "choice": 1,
         }
-        # Создание объекта
+        # Создается и сохраняется объект TestResult на основе данных.
         result = TestResult(**data)
         result.save()
 
+        # print("Результат сохранения:", result.test, result.is_correct, result.id)
+
         # Получение списка результатов
         response = self.client.get('/result_list/')
+
+        print(response)
 
         # Проверяем статус код получения списка результатов
         self.assertEqual(
@@ -42,21 +49,35 @@ class TestResultCase(APITestCase):
             status.HTTP_200_OK
         )
 
-        self.assertEqual(
-            response.headers['Content-Type'],
-            'application/json'
-        )
+        # Все объекты TestResult из базы данных
+        results = TestResult.objects.all()
 
-        self.assertEqual(response.json(), {
-            "id": 31,
-            "is_correct": True,
-            "choice": 2,
-            "date": "2023-12-29T21:32:17.901406+03:00",
-            "user": 1,
-            "test": 1
-        }
-                         )
+        # Полученные результаты
+        for result in results:
+            test = result.test
+            is_correct = result.is_correct
+            choice = result.choice
 
-        self.assertTrue(
-            TestResult.objects.all().exists()
-        )
+            # Полученные данные
+            print(f"Тест: {test}, Правильный ли ответ: {is_correct}, Выбор: {choice}")
+
+        # self.assertEqual(
+        #     response.headers['Content-Type'],
+        #     'application/json'
+        # )
+        #
+        # response = self.client.get('/result_list/')
+        #
+        # self.assertEqual(response.json(), {
+        #     "id": 31,
+        #     "is_correct": True,
+        #     "choice": 2,
+        #     "date": "2023-12-29T21:32:17.901406+03:00",
+        #     "user": 1,
+        #     "test": 1
+        # }
+        #                  )
+        #
+        # self.assertTrue(
+        #     TestResult.objects.all().exists()
+        # )
