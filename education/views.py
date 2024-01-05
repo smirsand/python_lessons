@@ -11,12 +11,19 @@ from education.serliazers import ChapterSerializer, MaterialSerializer, TestSeri
 from users.models import User
 
 
-class ChapterRetrieveAPIView(generics.RetrieveAPIView):
+class ChapterCreateAPIView(generics.CreateAPIView):
     """
-    Контроллер просмотра одного раздела
+    Контроллер создания раздела
     """
     serializer_class = ChapterSerializer
+
+
+class ChapterListAPIView(generics.ListAPIView):
+    """
+    Контроллер просмотра списка разделов
+    """
     queryset = Chapter.objects.all()
+    serializer_class = ChapterSerializer
 
 
 class ChapterListView(LoginRequiredMixin, ListView):
@@ -166,14 +173,6 @@ class TestResultCreateAPIView(generics.CreateAPIView):
     Контроллер создания результата тестов
     """
     serializer_class = TestResultSerializer
-
-
-class TestResultRetrieveAPIView(generics.RetrieveAPIView):
-    """
-    Контроллер просмотра одного результата теста
-    """
-    serializer_class = TestResultSerializer
-    queryset = TestResult.objects.all()
 
 
 class TestResultListAPIView(generics.RetrieveAPIView):
