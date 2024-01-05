@@ -161,9 +161,24 @@ class TestResultListView(ListView):  # Добавить LoginRequiredMixin, по
         return queryset
 
 
+class TestResultCreateAPIView(generics.CreateAPIView):
+    """
+    Контроллер создания результата тестов
+    """
+    serializer_class = TestResultSerializer
+
+
 class TestResultRetrieveAPIView(generics.RetrieveAPIView):
     """
     Контроллер просмотра одного результата теста
+    """
+    serializer_class = TestResultSerializer
+    queryset = TestResult.objects.all()
+
+
+class TestResultListAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра списка результатов теста
     """
     serializer_class = TestResultSerializer
     queryset = TestResult.objects.all()
