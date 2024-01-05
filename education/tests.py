@@ -16,7 +16,6 @@ class TestResultCase(APITestCase):
         self.material_id = Material.objects.get(pk=self.material.id)
         self.test = Test.objects.create(question="Сколько ног у стула?", material=self.material_id, correct_answer=1)
         self.test_pk = Test.objects.get(pk=1)
-        self.user_id = User.objects.get(pk=1)  # Получаем экземпляр пользователя по его идентификатору
 
     def test_test_result_list(self):
         """Тест получения списка результатов"""
@@ -50,4 +49,40 @@ class TestResultCase(APITestCase):
 
         self.assertTrue(
             TestResult.objects.all().exists()
+        )
+
+
+class ChapterCase(APITestCase):
+    def setUp(self):
+        # Создаем пользователя
+        self.user = User.objects.create(email='test@mail.ru', password='test', first_name='Test', last_name='Testov',
+                                        is_staff=True, is_superuser=True, is_active=True)
+        self.client.force_authenticate(user=self.user)  # Аутентификация пользователя
+        self.chapter = Chapter.objects.create(name_chapter="Раздел")
+
+    def test_chapter_retrieve(self):
+        """Тест получения раздела"""
+
+        self.client.force_login(self.user)  # аутентификация пользователя.
+
+        data = {
+            "name_chapter": "Раздел №1",
+        }
+
+        # Создается и сохраняется объект Chapter на основе данных.
+        res = self.client.post('/chapter/create/', data=data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Получение списка результатов
+        response = self.client.get(f'/chapter_list/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.json(), [{
+                    'id': 1, 'name_chapter': 'Раздел'},
+            {
+                    'id': 2, 'name_chapter': 'Раздел №1'
+                    }])
+
+        self.assertTrue(
+            Chapter.objects.all().exists()
         )
