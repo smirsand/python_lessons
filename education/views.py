@@ -2,12 +2,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import DetailView, ListView
+from rest_framework import generics
 from rest_framework.generics import get_object_or_404
 
 from education.forms import TestForm
 from education.models import Chapter, Material, Test, TestResult
 from education.serliazers import ChapterSerializer, MaterialSerializer, TestSerializer, TestResultSerializer
 from users.models import User
+
+
+class ChapterRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра одного раздела
+    """
+    serializer_class = ChapterSerializer
+    queryset = Chapter.objects.all()
 
 
 class ChapterListView(LoginRequiredMixin, ListView):
@@ -45,6 +54,14 @@ class MaterialDetailView(LoginRequiredMixin, DetailView):
     queryset = Material.objects.all()
     template_name = 'education/material_detail.html'
     extra_context = {'title': 'Материал'}
+
+
+class MaterialRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра одного материала
+    """
+    serializer_class = MaterialSerializer
+    queryset = Material.objects.all()
 
 
 class TestListView(LoginRequiredMixin, ListView):
@@ -118,6 +135,14 @@ class TestDetailView(LoginRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('education:test_list', kwargs={'material_id': test.material.pk}))
 
 
+class TestRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра одного теста
+    """
+    serializer_class = TestSerializer
+    queryset = Test.objects.all()
+
+
 class TestResultListView(ListView):  # Добавить LoginRequiredMixin, после прохождения тестов.
     """
     Контроллер списка результатов теста.
@@ -134,3 +159,11 @@ class TestResultListView(ListView):  # Добавить LoginRequiredMixin, по
         # фильтруем объекты, оставляя те, которые принадлежат текущему пользователю.
         queryset = queryset.filter(user=self.request.user)
         return queryset
+
+
+class TestResultRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра одного результата теста
+    """
+    serializer_class = TestResultSerializer
+    queryset = TestResult.objects.all()
