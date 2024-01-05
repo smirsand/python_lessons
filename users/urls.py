@@ -1,4 +1,4 @@
-from users.views import LoginView, LogoutView, RegisterView, ProfileView
+from users.views import LoginView, LogoutView, RegisterView, ProfileView, UserRetrieveAPIView
 from django.urls import path
 
 from users.apps import UsersConfig
@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('register/', RegisterView.as_view(), name='register'),
     path('profile/', ProfileView.as_view(), name='profile'),
+    path('user/<int:pk>/', UserRetrieveAPIView.as_view(), name='user-retrieve'),
 ]
