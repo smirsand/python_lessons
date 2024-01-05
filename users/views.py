@@ -3,9 +3,11 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
+from rest_framework import generics
 
 from users.forms import UserRegisterForm, ProfileForm
 from users.models import User
+from users.serializers import UserSerializer
 
 
 class LoginView(BaseLoginView):
@@ -44,3 +46,11 @@ class ProfileView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    """
+    Контроллер просмотра одного результата теста
+    """
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
