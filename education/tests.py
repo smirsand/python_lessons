@@ -18,7 +18,9 @@ class TestResultCase(APITestCase):
         self.test_pk = Test.objects.get(pk=1)
 
     def test_test_result_list(self):
-        """Тест получения списка результатов"""
+        """
+        Тест получения списка результатов
+        """
 
         self.client.force_login(self.user)  # аутентификация пользователя.
 
@@ -61,7 +63,9 @@ class ChapterCase(APITestCase):
         self.chapter = Chapter.objects.create(name_chapter="Раздел")
 
     def test_chapter_retrieve(self):
-        """Тест получения раздела"""
+        """
+        Тест получения раздела
+        """
 
         self.client.force_login(self.user)  # аутентификация пользователя.
 
@@ -78,10 +82,10 @@ class ChapterCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         self.assertEqual(response.json(), [{
-                    'id': 1, 'name_chapter': 'Раздел'},
+            'id': 1, 'name_chapter': 'Раздел'},
             {
-                    'id': 2, 'name_chapter': 'Раздел №1'
-                    }])
+                'id': 2, 'name_chapter': 'Раздел №1'
+            }])
 
         self.assertTrue(
             Chapter.objects.all().exists()
