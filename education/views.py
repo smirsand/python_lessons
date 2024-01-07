@@ -150,7 +150,7 @@ class TestRetrieveAPIView(generics.RetrieveAPIView):
     queryset = Test.objects.all()
 
 
-class TestResultListView(ListView):  # Добавить LoginRequiredMixin, после прохождения тестов.
+class TestResultListView(LoginRequiredMixin, ListView):
     """
     Контроллер списка результатов теста.
     """
